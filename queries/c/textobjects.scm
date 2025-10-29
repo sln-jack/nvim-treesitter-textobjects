@@ -1,37 +1,57 @@
-(declaration
-  declarator: (function_declarator)) @function.outer
-
-(function_definition
-  body: (compound_statement)) @function.outer
-
 (function_definition
   body: (compound_statement
     .
     "{"
-    _+ @function.inner
-    "}"))
+    .
+    (_) @_start @_end
+    (_)? @_end
+    .
+    "}"
+    (#make-range! "function.inner" @_start @_end))) @function.outer
 
 (struct_specifier
-  body: (_) @class.inner) @class.outer
+  body: (field_declaration_list
+    .
+    "{"
+    . (_) @_start @_end
+    (_)? @_end
+    .
+    "}"
+    (#make-range! "class.inner" @_start @_end))) @class.outer
 
 (enum_specifier
-  body: (_) @class.inner) @class.outer
+  body: (enumerator_list
+    .
+    "{"
+    . (_) @_start @_end
+    (_)? @_end
+    .
+    "}"
+    (#make-range! "class.inner" @_start @_end))) @class.outer
 
 ; conditionals
 (if_statement
   consequence: (compound_statement
     .
     "{"
-    _+ @conditional.inner
-    "}")) @conditional.outer
+    .
+    (_) @_start @_end
+    (_)? @_end
+    .
+    "}"
+    (#make-range! "conditional.inner" @_start @_end))) @conditional.outer
 
 (if_statement
   alternative: (else_clause
     (compound_statement
       .
       "{"
-      _+ @conditional.inner
-      "}"))) @conditional.outer
+      .
+      (_) @_start @_end
+      (_)? @_end
+      .
+      "}"
+      (#make-range! "conditional.inner" @_start @_end)))) @conditional.outer
 
 (if_statement) @conditional.outer
 
@@ -57,8 +77,12 @@
   body: (compound_statement
     .
     "{"
-    _+ @loop.inner
-    "}")) @loop.outer
+    .
+    (_) @_start @_end
+    (_)? @_end
+    .
+    "}"
+    (#make-range! "loop.inner" @_start @_end))) @loop.outer
 
 (for_statement) @loop.outer
 
@@ -66,8 +90,12 @@
   body: (compound_statement
     .
     "{"
-    _+ @loop.inner
-    "}")) @loop.outer
+    .
+    (_) @_start @_end
+    (_)? @_end
+    .
+    "}"
+    (#make-range! "loop.inner" @_start @_end))) @loop.outer
 
 (do_statement) @loop.outer
 
@@ -75,21 +103,36 @@
   body: (compound_statement
     .
     "{"
-    _+ @loop.inner
-    "}")) @loop.outer
+    .
+    (_) @_start @_end
+    (_)? @_end
+    .
+    "}"
+    (#make-range! "loop.inner" @_start @_end))) @loop.outer
 
-(compound_statement) @block.outer
+(compound_statement
+  .
+  "{"
+  .
+  (_) @_start @_end
+  (_)? @_end
+  .
+  "}"
+  (#make-range! "block.inner" @_start @_end)) @block.outer
 
 (comment) @comment.outer
-
-(call_expression) @call.outer
 
 (call_expression
   arguments: (argument_list
     .
     "("
-    _+ @call.inner
-    ")"))
+    .
+    (_) @_start
+    (_)* 
+    (_) @_end
+    .
+    ")"
+    (#make-range! "call.inner" @_start @_end))) @call.outer
 
 (return_statement
   (_)? @return.inner) @return.outer
@@ -112,27 +155,31 @@
 (preproc_else
   (_) @statement.outer)
 
-(parameter_list
-  "," @parameter.outer
+((parameter_list
+  "," @_start
   .
-  (parameter_declaration) @parameter.inner @parameter.outer)
+  (parameter_declaration) @parameter.inner)
+  (#make-range! "parameter.outer" @_start @parameter.inner))
 
-(parameter_list
+((parameter_list
   .
-  (parameter_declaration) @parameter.inner @parameter.outer
+  (parameter_declaration) @parameter.inner
   .
-  ","? @parameter.outer)
+  ","? @_end)
+  (#make-range! "parameter.outer" @parameter.inner @_end))
 
-(argument_list
-  "," @parameter.outer
+((argument_list
+  "," @_start
   .
-  (_) @parameter.inner @parameter.outer)
+  (_) @parameter.inner)
+  (#make-range! "parameter.outer" @_start @parameter.inner))
 
-(argument_list
+((argument_list
   .
-  (_) @parameter.inner @parameter.outer
+  (_) @parameter.inner
   .
-  ","? @parameter.outer)
+  ","? @_end)
+  (#make-range! "parameter.outer" @parameter.inner @_end))
 
 (number_literal) @number.inner
 
