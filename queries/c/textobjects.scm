@@ -3,31 +3,28 @@
     .
     "{"
     .
-    (_) @_start @_end
-    (_)? @_end
+    (_) @function.inner
+    (_)? @function.inner
     .
-    "}"
-    (#make-range! "function.inner" @_start @_end))) @function.outer
+    "}")) @function.outer
 
 (struct_specifier
   body: (field_declaration_list
     .
     "{"
-    . (_) @_start @_end
-    (_)? @_end
+    . (_) @class.inner
+    (_)? @class.inner
     .
-    "}"
-    (#make-range! "class.inner" @_start @_end))) @class.outer
+    "}")) @class.outer
 
 (enum_specifier
   body: (enumerator_list
     .
     "{"
-    . (_) @_start @_end
-    (_)? @_end
+    . (_) @class.inner
+    (_)? @class.inner
     .
-    "}"
-    (#make-range! "class.inner" @_start @_end))) @class.outer
+    "}")) @class.outer
 
 ; conditionals
 (if_statement
@@ -35,11 +32,10 @@
     .
     "{"
     .
-    (_) @_start @_end
-    (_)? @_end
+    (_) @conditional.inner
+    (_)? @conditional.inner
     .
-    "}"
-    (#make-range! "conditional.inner" @_start @_end))) @conditional.outer
+    "}")) @conditional.outer
 
 (if_statement
   alternative: (else_clause
@@ -47,11 +43,10 @@
       .
       "{"
       .
-      (_) @_start @_end
-      (_)? @_end
+      (_) @conditional.inner
+      (_)? @conditional.inner
       .
-      "}"
-      (#make-range! "conditional.inner" @_start @_end)))) @conditional.outer
+      "}"))) @conditional.outer
 
 (if_statement) @conditional.outer
 
@@ -78,11 +73,10 @@
     .
     "{"
     .
-    (_) @_start @_end
-    (_)? @_end
+    (_) @loop.inner
+    (_)? @loop.inner
     .
-    "}"
-    (#make-range! "loop.inner" @_start @_end))) @loop.outer
+    "}")) @loop.outer
 
 (for_statement) @loop.outer
 
@@ -91,11 +85,10 @@
     .
     "{"
     .
-    (_) @_start @_end
-    (_)? @_end
+    (_) @loop.inner
+    (_)? @loop.inner
     .
-    "}"
-    (#make-range! "loop.inner" @_start @_end))) @loop.outer
+    "}")) @loop.outer
 
 (do_statement) @loop.outer
 
@@ -104,21 +97,19 @@
     .
     "{"
     .
-    (_) @_start @_end
-    (_)? @_end
+    (_) @loop.inner
+    (_)? @loop.inner
     .
-    "}"
-    (#make-range! "loop.inner" @_start @_end))) @loop.outer
+    "}")) @loop.outer
 
 (compound_statement
   .
   "{"
   .
-  (_) @_start @_end
-  (_)? @_end
+  (_) @block.inner
+  (_)? @block.inner
   .
-  "}"
-  (#make-range! "block.inner" @_start @_end)) @block.outer
+  "}") @block.outer
 
 (comment) @comment.outer
 
@@ -127,12 +118,11 @@
     .
     "("
     .
-    (_) @_start
+    (_) @call.inner
     (_)* 
-    (_) @_end
+    (_) @call.inner
     .
-    ")"
-    (#make-range! "call.inner" @_start @_end))) @call.outer
+    ")")) @call.outer
 
 (return_statement
   (_)? @return.inner) @return.outer
@@ -155,31 +145,27 @@
 (preproc_else
   (_) @statement.outer)
 
-((parameter_list
-  "," @_start
+(parameter_list
+  "," @parameter.outer
   .
-  (parameter_declaration) @parameter.inner)
-  (#make-range! "parameter.outer" @_start @parameter.inner))
+  (parameter_declaration) @parameter.inner @parameter.outer)
 
-((parameter_list
+(parameter_list
   .
-  (parameter_declaration) @parameter.inner
+  (parameter_declaration) @parameter.inner @parameter.outer
   .
-  ","? @_end)
-  (#make-range! "parameter.outer" @parameter.inner @_end))
+  ","? @parameter.outer)
 
-((argument_list
-  "," @_start
+(argument_list
+  "," @parameter.outer
   .
-  (_) @parameter.inner)
-  (#make-range! "parameter.outer" @_start @parameter.inner))
+  (_) @parameter.inner @parameter.outer)
 
-((argument_list
+(argument_list
   .
-  (_) @parameter.inner
+  (_) @parameter.inner @parameter.outer
   .
-  ","? @_end)
-  (#make-range! "parameter.outer" @parameter.inner @_end))
+  ","? @parameter.outer)
 
 (number_literal) @number.inner
 
